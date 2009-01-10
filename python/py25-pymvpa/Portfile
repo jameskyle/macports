@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 44414 2008-12-28 05:42:53Z mcalhoun@macports.org $
+
+PortSystem              1.0
+PortGroup               python25 1.0
+
+name                    py25-pymvpa
+version                 current
+categories              python
+platforms               darwin
+maintainers             jameskyle@ucla.edu
+description             PyMVPA is a Python module intended to ease pattern classification analyses of large datasets.
+long_description        ${description}. In the neuroimaging contexts such analysis techniques are also known as decoding or MVPA analysis. PyMVPA provides high-level abstraction of typical processing steps and a number of implementations of some popular algorithms.
+
+homepage                http://www.pymvpa.org
+fetch.type              git
+git.url                 git://git.debian.org/git/pkg-exppsy/pymvpa.git
+
+depends_lib             port:py25-numpy 
+configure.args                                  
+
+build.env               CFLAGS='-I${prefix}/include -L${prefix}/lib'
+
+patch.pre_args          -p1
+patchfiles              patch-mvpa.diff
+
+default_variants        +pywavelets +libsvm +hcluster +pynifti
+
+variant scipy description {Add support for scipy libraries} {
+    depends_lib-append port:py25-scipy
+}
+
+variant pynifti description {Add support for the Nifti file format} {
+    depends_lib-append port:py25-pynifti
+}
+
+variant hcluster description {perform cluster analysis and plot dendograms of results} {
+    depends_lib-append port:py25-hcluster
+}
+
+variant libsvm description {compile the libsvm classifier extension} {
+    depends_lib-append port:libsvm \
+                       port:swig
+    configure.args          --with-libsvm
+}
+
+variant matplotlib description {include support for the matplotlib library} {
+    ui_msg "The default build may fail to build."
+    ui_msg "If this is the case, please build with +wspython variant."
+    depends_lib-append port:matplotlib
+}
+
+variant pywavelet description {include support for pywavelet module} {
+    depends_lib-append port:py25-PyWavelet
+}
+build {
+    system "cd ${worksrcpath} && ${build.env} python2.5 setup.py build_ext ${configure.args}"
+}

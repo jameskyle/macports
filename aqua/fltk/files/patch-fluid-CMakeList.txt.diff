@@ -1,0 +1,11 @@
+--- fluid/CMakeLists.txt	2005-08-05 22:02:56.000000000 -0700
++++ fluid/CMakeLists.txt	2008-07-29 21:54:09.000000000 -0700
+@@ -23,7 +23,7 @@
+ 
+ ADD_EXECUTABLE(fluid ${CPPFILES})
+ INSTALL_TARGETS(/bin fluid)
+-TARGET_LINK_LIBRARIES(fluid fltk fltk_images fltk_forms ${FLTK_PLATFORM_DEPENDENT_LIBS})
++TARGET_LINK_LIBRARIES(fluid "-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib" fltk fltk_images fltk_forms ${FLTK_PLATFORM_DEPENDENT_LIBS})
+ IF(OPENGL_FOUND)
+ 	TARGET_LINK_LIBRARIES(fluid fltk_gl)
+ ENDIF(OPENGL_FOUND)

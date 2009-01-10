@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id: Portfile 43150 2008-12-05 23:49:52Z jmr@macports.org $
+
+PortSystem              1.0
+PortGroup               python26 1.0
+
+name                    py26-bpython
+set my_name             bpython
+version                 0.7.1
+categories              python
+platforms               darwin
+maintainers             jameskyle@ucla.edu
+description             a fancy interface to the Python interpreter for Unix-like operating systems 
+long_description        ${description}
+
+homepage                http://www.noiseforfree.com/bpython/
+master_sites            ${homepage}
+distfiles               ${my_name}-${version}.tar.gz
+worksrcdir              ${my_name}
+
+checksums               md5 65554d3ebb9f9b5cab62e446424b8ab7 \
+                        sha1 c43693f80b8bd7cfa81ec25568b411e29960aa36 \
+                        rmd160 40af44675fc06394b83d656370fae1362dd87c32 
+
+depends_lib-append      port:py26-parsing \
+                        port:py26-pygments 
+
+post-destroot {
+    system "ln -s ${python.prefix}/bin/${my_name} ${destroot}${prefix}/bin/${my_name}"
+    file mkdir ${python.prefix}/share/bpython2.6
+    system "cp ${worksrcpath}/sample-rc ${python.prefix}/share/bpython2.6/"
+}                        

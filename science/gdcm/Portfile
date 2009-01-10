@@ -1,0 +1,36 @@
+PortSystem 1.0
+
+name              gdcm
+version           2.0.10
+categories        science graphics
+maintainers       jameskyle@ucla.edu
+description       GDCM is an open source DICOM library. It is meant to deal with DICOM files (as specified in part 10 of the DICOM standard).
+long_description  GDCM is an open source DICOM library. It is meant to deal with DICOM files (as specified in part 10 of the DICOM standard). It offers some compatibility with ACR-NEMA 1.0 & 2.0 files (raw files). It is written in C++ and offers wrapping to the following target languages (via the use of swig)
+
+homepage          http://gdcm.sourceforge.net/
+platforms         darwin
+master_sites      sourceforge
+checksums         md5 6c3d3289880e028d9d1a3c2c21742046 \
+                  sha1 4d346cdf3d2c62eb8ca48eec2c0de72b5ba6a843 \
+                  rmd160 806068f68914d0f734f673cbbc1e68c931140151 
+
+depends_build port:cmake
+configure.cmd cmake
+
+configure.pre_args
+configure.args -DCMAKE_INSTALL_PREFIX:PATH=${prefix}
+
+use_parallel_build yes
+
+variant universal {
+  configure.args-append -DUNIVERSAL:BOOL=TRUE
+}
+
+configure {
+ cd ${workdir}
+ file mkdir bingcc
+ cd ./bingcc
+ ${configure.cmd} ${configure.args} ../${worksrcdir 
+ worksrcpath
+}
+

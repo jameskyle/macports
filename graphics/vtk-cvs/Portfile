@@ -1,0 +1,44 @@
+# $Id: Portfile 20313 2006-11-01 21:58:20Z blair@macports.org $
+
+PortSystem 1.0
+name		VTK
+version		cvs
+revision	1
+categories	graphics
+maintainers	css@macports.org
+description	3D visualization toolkit
+long_description	an open source, freely available software system  \
+	for 3D computer graphics, image processing, and visualization     \
+	used by thousands of researchers and developers around the world. \
+	VTK consists of a C++ class library, and several interpreted      \
+	interface layers including Tcl/Tk, Java, and Python.
+
+homepage	http://www.vtk.org/
+platforms	darwin 
+master_sites http://public.kitware.com
+
+fetch.type cvs
+cvs.root :pserver:anonymous@public.kitware.com:/cvsroot/VTK
+cvs.password vtk
+cvs.module VTK
+
+depends_build	port:cmake
+use_parallel_build yes
+worksrcdir VTK
+configure.cmd cmake
+
+configure.pre_args
+configure.args -DBUILD_EXAMPLES:BOOL=OFF \
+               -DBUILD_TESTING:BOOL=OFF \
+               -DCMAKE_BUILD_TYPE:STRING=Release \
+               -DVTK_USE_HYBRID:BOOL=ON \
+               -DVTK_USE_PARALLEL:BOOL=ON \
+               -DVTK_USE_RENDERING:BOOL=ON \
+               -DVTK_USE_ANSI_STDLIB:BOOL=ON \
+               -DVTK_USE_SYSTEM_PNG:BOOL=ON \
+               -DVTK_USE_SYSTEM_JPEG:BOOL=ON \
+               -DCMAKE_INSTALL_PREFIX:PATH=${prefix} \
+               -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+               -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++-4.2 \
+               -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc-4.2
+

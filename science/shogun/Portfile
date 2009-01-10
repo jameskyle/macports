@@ -1,0 +1,61 @@
+PortSystem        1.0
+PortGroup         python25 1.0
+name              shogun
+version           0.6.7
+categories        science 
+maintainers       jameskyle@ucla.edu
+description       The machine learning toolbox's focus is on large scale kernel methods and especially on Support Vector Machines (SVM).
+long_description  ${description} It provides a generic SVM object interfacing to several different SVM implementations, among them the state of the art OCAS, LibSVM , SVMLight,  SVMLin  and GPDT . Each of the SVMs can be combined with a variety of kernels. The toolbox not only provides efficient implementations of the most common kernels, like the Linear, Polynomial, Gaussian and Sigmoid Kernel but also comes with a number of recent string kernels as e.g. the Locality Improved , Fischer , TOP , Spectrum , Weighted Degree Kernel (with shifts).
+
+homepage          http://www.shogun-toolbox.org
+platforms         darwin
+master_sites      http://shogun-toolbox.org/archives/shogun/releases/0.6/sources/
+
+checksums         md5 03d2c5ae44fa7ca8baeb8c3fd2bae010 \
+                  sha1 7657da29d9f9afc0c204b8f2e68c784308185a1e \
+                  rmd160 c00ceceb791d2073413c089e23e361a3d584cc24
+
+
+configure.args    --disable-svm-light
+
+worksrcdir        ${worksrcdir}/src
+use_parallel_build yes
+
+default_variants +python +atlas +glpk
+
+variant cplex description {enable Multiple Kernel Learning CPLEX(tm)} {
+  configure.args-append --enable-cplex
+}
+
+variant python description {build the python interface} {
+  depends_lib-append port:python25 \
+                    port:py25-numpy
+
+  configure.args-append --interface=python \
+                        --python=${prefix}/bin/python2.5
+}
+
+variant R description {build the R interface} {
+  depends_lib-append port:R
+
+  configure.args-append --interface=r
+}
+
+variant atlas description {use the fast atlas and lapack libraries} {
+  depends_lib-append port:atlas
+}
+
+variant octave description {build the octave interface} {
+  depends_lib-append port:octave
+
+  configure.args-append --interface=octave \
+                        --octdir=${prefix}
+}
+
+variant matlab description {build the matlab interface} {
+  configure.args-append --interface=matlab
+}
+
+variant glpk description {enable support for the GNU Linear Programming Kit} {
+  depends_lib-append port:glpk
+}

@@ -1,0 +1,28 @@
+# $Id: Portfile 34064 2008-02-11 19:55:24Z ryandesign@macports.org $
+
+PortSystem 1.0
+
+name		          fsl
+version           4.1.1
+categories        science
+maintainers       jameskyle@ucla.edu
+description       MRI Analysis Suite
+long_description	FSL is a comprehensive library of analysis tools for FMRI, MRI and DTI brain imaging data. FSL is written mainly by members of the Analysis Group, FMRIB, Oxford, UK.
+
+homepage          http://www.fmrib.ox.ac.uk/fsl/	
+platforms		      darwin
+master_sites		  http://www.fmrib.ox.ac.uk/fsldownloads/
+distfiles         ${name}-${version}-macosx.tar.gz
+checksums		      md5	edc8a64a24bd3efd7891d71580b20af3
+
+worksrcdir        fsl
+configure {}
+build {}
+patchfiles        patch-bin-fslview.diff
+
+#destroot.violate_mtree      yes
+destroot {
+  xinstall -d -m 0755 ${destroot}/Applications/MacPorts
+  system "mv ${worksrcpath}/bin/fslview.app ${destroot}/Applications/MacPorts/"
+  system "cp -R ${worksrcpath} ${destroot}${prefix}/share/"
+}

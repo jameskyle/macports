@@ -1,0 +1,18 @@
+--- UserInterface/SliceWindow/PolygonScanConvert.cxx.orig	2008-07-29 22:37:06.000000000 -0700
++++ UserInterface/SliceWindow/PolygonScanConvert.cxx	2008-07-29 22:43:44.000000000 -0700
+@@ -22,11 +22,12 @@
+ #ifdef WIN32
+ typedef void (CALLBACK *TessCallback)();
+ #else
+-#ifdef __APPLE__
++// Removed. No longer necessary in leopard
++/*#ifdef __APPLE__
+ typedef GLvoid (*TessCallback)(...);
+-#else
++#else */
+ typedef void (*TessCallback)();
+-#endif
++//#endif
+ #endif
+ 
+ void 

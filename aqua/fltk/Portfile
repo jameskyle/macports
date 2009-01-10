@@ -1,0 +1,47 @@
+# $Id: Portfile 36328 2008-04-27 08:48:13Z ryandesign@macports.org $
+
+PortSystem      1.0
+
+name            fltk
+version         1.1.9
+categories      aqua devel
+platforms       macosx
+maintainers     nomaintainer
+description     Fast Light Tool Kit
+
+long_description \
+    FLTK (pronounced fulltick) \
+    is a cross-platform C++ GUI toolkit for UNIX/Linux (X11), \
+    Microsoft Windows, and Mac OS X. \
+    FLTK provides modern GUI functionality without the bloat \
+    and supports 3D graphics via OpenGL and \
+    its built-in GLUT emulation. \
+    \
+    FLTK is designed to be small and modular enough to be \
+    statically linked, but works fine as a shared library. \
+    FLTK also includes an excellent UI builder called FLUID \
+    that can be used to create applications in minutes.
+
+homepage        http://www.fltk.org/
+master_sites    http://ftp.easysw.com/pub/fltk/${version}/
+worksrcdir      ${name}-${version}
+distname        ${worksrcdir}-source
+depends_build port:cmake
+use_parallel_build yes
+
+configure.cmd cmake
+checksums       md5 d3c76db1b6cebce7a009429bbd125470
+
+depends_lib     port:jpeg \
+                port:libpng \
+                port:zlib
+patchfiles      patch-fluid-CMakeList.txt.diff
+configure.pre_args
+
+configure.args -DBUILD_EXAMPLES:BOOL=OFF \
+               -DCMAKE_BUILD_TYPE:STRING=Release \
+               -DCMAKE_INSTALL_PREFIX:PATH=${prefix} \
+               -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+               -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++-4.2 \
+               -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc-4.2
+

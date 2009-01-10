@@ -1,0 +1,89 @@
+PortSystem    1.0
+name          itkgray
+version       beta
+categories    science
+platforms     macosx
+maintainers   jameskyle@ucla.edu
+description   Auto/Manual MRI Segmentation tool
+
+homepage      http://white.stanford.edu/software/
+master_sites  http://white.stanford.edu/software/downloads/itkGray/
+distfiles     itkGray_080801.tgz
+use_parallel_build yes
+
+configure.cmd cmake
+checksums     md5 a778ca93f4b4ba007cb971bfaaeb13f3
+
+#depends_build port:fltk \
+              port:vtk-cvs \
+              port:InsightToolkitCVS
+
+worksrcdir    itkgray              
+#patchfiles    patch-SNAP-UserInterface-SliceWindow-PolygonScanConvert.cxx.diff
+
+configure.cc   /usr/bin/gcc-4.2
+configure.pre_args
+configure.args -DBUILD_EXAMPLES:BOOL=OFF \
+               -DBUILD_TESTING:BOOL=OFF \
+               -DCMAKE_BUILD_TYPE:STRING=Release \
+               -DCMAKE_CXX_FLAGS_RELEASE:STRING="-O3 -DNDEBUG" \
+               -DUSE_ITK:BOOL=ON \
+               -DUSE_VTK:BOOL=ON \
+               -DUSE_FLTK:BOOL=ON \
+               -DITK_DIR:PATH=/opt/local/lib/InsightToolkit \
+               -DVTK_DIR:PATH=/opt/local/lib/vtk-5.3 \
+               -DFLTK_DIR:PATH=${workpath}/fltk-1.1.9 \
+               -DCMAKE_INSTALL_PREFIX:PATH=${prefix} \
+               -DFLTK_FLUID_EXECUTABLE:FILEPATH=/opt/local/bin/fluid \
+               -DITK_FLTK_RESOURCE:FILEPATH=/opt/local/include/FL \
+               -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+               -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++-4.2 \
+               -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc-4.2
+
+               #-DCMAKE_CXX_FLAGS:STRING=-fno-implicit-templates \
+
+post-fetch {
+#  # fetch  fltk sources
+  system "cd ${distpath} && curl -O http://ftp.easysw.com/pub/fltk/1.1.9/fltk-1.1.9-source.tar.gz"
+  system "cd ${workpath} && tar xzf ${distpath}/fltk-1.1.9-source.tar.gz"
+#
+#  # fetch the insight sources to build against  
+#  system "cvs -d :pserver:anonymous:insight@www.itk.org:/cvsroot/Insight login"
+#  system "cd ${workpath} && cvs -d :pserver:anonymous@www.itk.org:/cvsroot/Insight co InsightApplications "
+#  system "cd ${workpath} && cvs -d :pserver:anonymous@www.itk.org:/cvsroot/Insight co Insight"
+#
+#  # fetch the vtk sources to build against
+#  system "cvs -d :pserver:anonymous:vtk@public.kitware.com:/cvsroot/VTK login"
+#  system "cd ${workpath} && cvs -d :pserver:anonymous@public.kitware.com:/cvsroot/VTK co VTK"
+}
+
+pre-configure {
+#   system "cd ${workpath}/Insight && mkdir bingcc && cd bingcc && cmake \
+#              -DBUILD_SHARED_LIBS:BOOL=OFF \
+#              -DCMAKE_INSTALL_PREFIX:PATH=${prefix} \
+#              -DBUILD_EXAMPLES:BOOL=OFF \
+#              -DBUILD_TESTING:BOOL=OFF \
+#              -DCMAKE_BUILD_TYPE:STRING=Release .." 
+#
+#    system "cd ${workpath}/VTK && mkdir bingcc && cd bingcc && cmake \
+#              -DBUILD_EXAMPLES:BOOL=OFF \
+#              -DBUILD_TESTING:BOOL=OFF \
+#              -DCMAKE_BUILD_TYPE:STRING=Release \
+#              -DVTK_USE_HYBRID:BOOL=ON \
+#              -DVTK_USE_PARALLEL:BOOL=ON \
+#              -DVTK_USE_RENDERING:BOOL=ON \
+#              -DVTK_USE_ANSI_STDLIB:BOOL=ON \
+#              -DVTK_USE_SYSTEM_PNG:BOOL=ON \
+#              -DVTK_USE_SYSTEM_JPEG:BOOL=ON .."
+#     
+    system "cd ${workpath}/fltk-1.1.9 && mkdir bingcc && cd bingcc && cmake \
+               -DBUILD_EXAMPLES:BOOL=OFF \
+               -DCMAKE_BUILD_TYPE:STRING=Release \
+               -DCMAKE_INSTALL_PREFIX:PATH=${prefix} \
+               -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+               -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/g++-4.2 \
+               -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/gcc-4.2 .."
+    
+}
+
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4

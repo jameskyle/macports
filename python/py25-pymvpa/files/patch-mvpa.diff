@@ -1,0 +1,51 @@
+diff --git a/mvpa/clfs/libsvmc/svm.py b/mvpa/clfs/libsvmc/svm.py
+index 9d4fda6..e745a07 100644
+--- a/mvpa/clfs/libsvmc/svm.py
++++ b/mvpa/clfs/libsvmc/svm.py
+@@ -376,12 +376,12 @@ class SVM(_SVM):
+ #
+ # check if there is a libsvm version with configurable
+ # noise reduction ;)
+-if hasattr(svm.svmc, 'svm_set_verbosity'):
+-    if __debug__ and "LIBSVM" in debug.active:
+-        debug("LIBSVM", "Setting verbosity for libsvm to 255")
+-        svm.svmc.svm_set_verbosity(255)
+-    else:
+-        svm.svmc.svm_set_verbosity(0)
++#if hasattr(svm.svmc, 'svm_set_verbosity'):
++#    if __debug__ and "LIBSVM" in debug.active:
++#        debug("LIBSVM", "Setting verbosity for libsvm to 255")
++#        svm.svmc.svm_set_verbosity(255)
++#    else:
++#        svm.svmc.svm_set_verbosity(0)
+ 
+ 
+ 
+diff --git a/mvpa/clfs/libsvmc/svmc.i b/mvpa/clfs/libsvmc/svmc.i
+index 2b50c85..16bfa5d 100644
+--- a/mvpa/clfs/libsvmc/svmc.i
++++ b/mvpa/clfs/libsvmc/svmc.i
+@@ -146,9 +146,6 @@ struct svm_model
+ 				// 0 if svm_model is created by svm_train
+ };
+ 
+-/* one really wants to configure verbosity within python! */
+-void svm_set_verbosity(int verbosity_flag);
+-
+ struct svm_model *svm_train(const struct svm_problem *prob, const struct svm_parameter *param);
+ 
+ void svm_cross_validation(const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
+diff --git a/setup.py b/setup.py
+index b289285..ca6218a 100755
+--- a/setup.py
++++ b/setup.py
+@@ -109,7 +109,8 @@ setup(name         = 'pymvpa',
+                        'mvpa.misc.io',
+                        'mvpa.misc.plot',
+                        'mvpa.misc.fsl',
+-                       'mvpa.tests' ],
++                       'mvpa.tests',
++                       'mvpa.support'],
+       data_files = [('mvpa/data', ['mvpa/data'])],
+       scripts      = glob( 'bin/*' ),
+       ext_modules  = ext_modules

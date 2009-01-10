@@ -1,0 +1,32 @@
+PortSystem 1.0
+
+name		          Tix 
+version           8.4.3 
+categories        x11
+maintainers       jameskyle@ucla.edu
+
+description       This C++ library is intended for scientists and engineers who need to manipulate a variety of types of matrices using standard matrix operations.
+
+long_description	This C++ library is intended for scientists and engineers who need to manipulate a variety of types of matrices using standard matrix operations. Emphasis is on the kind of operations needed in statistical calculations such as least squares, linear equation solve and eigenvalues. It supports matrix types,e.g., Matrix (rectangular matrix), UpperTriangularMatrix, LowerTriangularMatrix, DiagonalMatrix, SymmetricMatrix, BandMatrix, UpperBandMatrix, LowerBandMatrix, SymmetricBandMatrix, IdentityMatrix, RowVector, ColumnVector.
+
+homepage          http://tix.sourceforge.net/
+platforms		      darwin
+master_sites		  http://superb-east.dl.sourceforge.net/sourceforge/tix/
+distfiles         ${name}${version}-src.tar.gz
+worksrcdir        ${name}${version}
+checksums		      md5 2b8bf4b10a852264678182652f477e59 \
+                  sha1 285d2f19f907ebad002ee0266f56be620d44f174 \
+                  rmd160 99249c4d7a19fcb8c27f11ab1b3ef6102911409d
+
+depends_lib port:tk \
+            port:tcl
+
+use_parallel_build yes
+
+configure.args --prefix=${prefix} \
+               --with-tk=/opt/local/lib/tkConfig.sh \
+               --with-tcl=/opt/local/lib/tclConfig.sh
+
+pre-build {
+  system "port -f build tcl tk"
+}
