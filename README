@@ -1,0 +1,14 @@
+This is my collection of Ports packages for OSX's MacPorts package management 
+system. Some are already included in the main MacPorts repository, some are
+not. 
+
+The main focuse of these ports are science analysis programs and their 
+dependents. 
+
+If you wish to access them (no guarantees!), check out the git repository and
+add the path to your sources.conf. 
+
+For more informaiton on the MacPorts system, please see the main project page
+found here:
+
+http://www.macports.org/
