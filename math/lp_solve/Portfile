@@ -34,5 +34,13 @@ destroot {
 		liblpsolve55.a liblpsolve55.dylib ${destroot}${prefix}/lib
 	xinstall -m 755 -W ${worksrcpath}/lp_solve \
 		lp_solve ${destroot}${prefix}/bin
+
+  if {[variant_isset dev]} {
+    xinstall -m 755 -d ${destroot}${prefix}/include/lpsolve
+    eval xinstall -m 444 [glob ${worksrcpath}/*.h] ${destroot}${prefix}/include/lpsolve/
+  }
 }
 
+variant dev description {install development headers} {
+  
+}
