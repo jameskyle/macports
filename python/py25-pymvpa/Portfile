@@ -6,15 +6,19 @@ PortGroup               python25 1.0
 
 name                    py25-pymvpa
 version                 current
+#version                 0.4
 categories              python
+
 platforms               darwin
 maintainers             jameskyle@ucla.edu
 description             PyMVPA is a Python module intended to ease pattern classification analyses of large datasets.
-long_description        ${description}. In the neuroimaging contexts such analysis techniques are also known as decoding or MVPA analysis. PyMVPA provides high-level abstraction of typical processing steps and a number of implementations of some popular algorithms.
+
+long_description        ${description}. In the neuroimaging contexts such analysis techniques are also known as decoding or MVPA analysis. PyMVPA provides high-level abstraction of typical processing steps and a number of implementations of some popular algorithms. 
 
 homepage                http://www.pymvpa.org
 fetch.type              git
 git.url                 git://git.debian.org/git/pkg-exppsy/pymvpa.git
+#git.branch              origin/maint/0.4
 
 depends_lib             port:py25-numpy 
 configure.args                                  
@@ -55,4 +59,8 @@ variant pywavelet description {include support for pywavelet module} {
 }
 build {
     system "cd ${worksrcpath} && ${build.env} python2.5 setup.py build_ext ${configure.args}"
+}
+
+post-activate {
+    ui_msg "This software is licensed under the MIT Open Source Initiative. The full license can be found at: http://www.opensource.org/licenses/mit-license.php. By installing this software you agree to the MIT terms of use."
 }
