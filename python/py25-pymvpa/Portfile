@@ -60,7 +60,3 @@ variant pywavelet description {include support for pywavelet module} {
 build {
     system "cd ${worksrcpath} && ${build.env} python2.5 setup.py build_ext ${configure.args}"
 }
-
-post-activate {
-    ui_msg "This software is licensed under the MIT Open Source Initiative. The full license can be found at: http://www.opensource.org/licenses/mit-license.php. By installing this software you agree to the MIT terms of use."
-}
