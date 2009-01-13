@@ -50,12 +50,12 @@ variant libsvm description {compile the libsvm classifier extension} {
 
 variant matplotlib description {include support for the matplotlib library} {
     ui_msg "The default build may fail to build."
-    ui_msg "If this is the case, please build with +wspython variant."
+    ui_msg "If this is the case, please build with +wxpython variant."
     depends_lib-append port:py25-matplotlib
 }
 
 variant pywavelet description {include support for pywavelet module} {
-    depends_lib-append port:py25-PyWavelet
+    depends_lib-append port:py25-PyWavelets
 }
 build {
     system "cd ${worksrcpath} && ${build.env} python2.5 setup.py build_ext ${configure.args}"
