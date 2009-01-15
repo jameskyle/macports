@@ -50,7 +50,7 @@ variant libsvm description {compile the libsvm classifier extension} {
 }
 
 variant matplotlib description {include support for the matplotlib library} {
-    ui_msg "The default build may fail to build."
+    ui_msg "The default matplotlib build may fail to compile."
     ui_msg "If this is the case, please build with +wxpython variant."
     depends_lib-append port:py25-matplotlib
 }
