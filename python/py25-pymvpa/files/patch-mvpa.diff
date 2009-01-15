@@ -1,26 +1,3 @@
-diff --git a/mvpa/clfs/libsvmc/svm.py b/mvpa/clfs/libsvmc/svm.py
-index 9d4fda6..e745a07 100644
---- a/mvpa/clfs/libsvmc/svm.py
-+++ b/mvpa/clfs/libsvmc/svm.py
-@@ -376,12 +376,12 @@ class SVM(_SVM):
- #
- # check if there is a libsvm version with configurable
- # noise reduction ;)
--if hasattr(svm.svmc, 'svm_set_verbosity'):
--    if __debug__ and "LIBSVM" in debug.active:
--        debug("LIBSVM", "Setting verbosity for libsvm to 255")
--        svm.svmc.svm_set_verbosity(255)
--    else:
--        svm.svmc.svm_set_verbosity(0)
-+#if hasattr(svm.svmc, 'svm_set_verbosity'):
-+#    if __debug__ and "LIBSVM" in debug.active:
-+#        debug("LIBSVM", "Setting verbosity for libsvm to 255")
-+#        svm.svmc.svm_set_verbosity(255)
-+#    else:
-+#        svm.svmc.svm_set_verbosity(0)
- 
- 
- 
 diff --git a/mvpa/clfs/libsvmc/svmc.i b/mvpa/clfs/libsvmc/svmc.i
 index 2b50c85..16bfa5d 100644
 --- a/mvpa/clfs/libsvmc/svmc.i
