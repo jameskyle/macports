@@ -5,8 +5,8 @@ PortSystem              1.0
 PortGroup               python25 1.0
 
 name                    py25-pymvpa
-version                 current
-#version                 0.4
+#version                 current
+version                 0.4
 categories              python
 
 platforms               darwin
@@ -18,9 +18,10 @@ long_description        ${description}. In the neuroimaging contexts such analys
 homepage                http://www.pymvpa.org
 fetch.type              git
 git.url                 git://git.debian.org/git/pkg-exppsy/pymvpa.git
-#git.branch              origin/maint/0.4
+git.branch              origin/maint/0.4
 
-depends_lib             port:py25-numpy 
+depends_lib             port:py25-numpy \
+                        port:git-core
 configure.args                                  
 
 build.env               CFLAGS='-I${prefix}/include -L${prefix}/lib'
