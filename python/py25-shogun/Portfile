@@ -26,7 +26,7 @@ configure.args    --disable-svm-light \
                   --includes=${prefix}/include \
                   --cxx=${prefix}/bin/g++-mp-4.3 \
                   --cc=${prefix}/bin/gcc-mp-4.3 \
-                  --disable-lapack \
+                  #--disable-lapack \
                   --install-path=${prefix} \
                   --enable-readline \
                   --destdir=${destroot}
@@ -36,7 +36,7 @@ patchfiles        patch-src.diff
 
 # atlas/lapack disabled due to bug #17698
 # default_variants  +atlas +glpk +lp_solve
-default_variants  +glpk +lp_solve
+default_variants  +glpk +lp_solve +atlas
 
 depends_lib       port:python25 \
                   port:py25-numpy \
@@ -53,9 +53,9 @@ variant cplex description {enable Multiple Kernel Learning CPLEX(tm)} {
 variant python description {build the python interface} {
 }
 
-#variant atlas description {use the fast atlas and lapack libraries} {
-#  depends_lib-append port:atlas
-#}
+variant atlas description {use the fast atlas and lapack libraries} {
+  depends_lib-append port:atlas
+}
 
 variant glpk description {enable support for the GNU Linear Programming Kit} {
   depends_lib-append port:glpk
