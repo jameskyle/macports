@@ -1,41 +1,74 @@
 # $Id: Portfile 38455 2008-07-21 14:30:08Z jmr@macports.org $
+# vim: set syn=tcl:
+PortSystem          1.0
 
-PortSystem         1.0
-
-categories         math
-name               atlas
-version            3.8.2
+categories          math
+name                atlas
+version             3.8.2
 
 # additional versions
-set lapackversion  3.2
-set lapackname     lapack
-set atlasdist      ${name}${version}.tar.bz2
-set lapackdist     ${lapackname}.tgz
+set lapackversion   3.2
+set lapackname      lapack
+set atlasdist       ${name}${version}.tar.bz2
+set lapackdist      ${lapackname}.tgz
 
-maintainers        cornell.edu:ajb78
-platforms          darwin
+maintainers         cornell.edu:ajb78
+platforms           darwin
 
-description        Portable optimal linear algebra software
-long_description   The current version provides a complete BLAS and LAPACK API.\
-                   For many operations, ATLAS achieves performance on par with\
-                   machine-specific tuned libraries.
+description         Portable optimal linear algebra software
+long_description    The current version provides a complete BLAS and LAPACK API.\
+                    For many operations, ATLAS achieves performance on par with\
+                    machine-specific tuned libraries.
 
-homepage           http://math-atlas.sourceforge.net/
+homepage            http://math-atlas.sourceforge.net/
 
-master_sites       sourceforge:math-atlas/${name}${version}.tar.bz2:atlas \
-                   http://www.netlib.org/lapack:lapack
+master_sites        sourceforge:math-atlas/${name}${version}.tar.bz2:atlas \
+                    http://www.netlib.org/lapack:lapack
 
-distfiles          ${atlasdist}:atlas \
-                   ${lapackdist}:lapack
+distfiles           ${atlasdist}:atlas \
+                    ${lapackdist}:lapack
 
-checksums          ${atlasdist} \
-                   md5 dd888f5d066c1fafeaaf2ae6b37e0b85 \
-                   sha1 2d1f2f789f57c9e7e8957f275b67c33176a36e0c \
-                   rmd160 8160ccb3af7cd7365ba87c77d636fb68b24c62ae \
-                   ${lapackdist} \
-                   md5 db2e9b01bd157b65440f8306c0ba5446 \
-                   sha1 398900bb2537f02578e5419c9d2e3580d705d2cc \
-                   rmd160 5ceea89d61e9738ac970875f794b7f5e7897e176 
+checksums           ${atlasdist} \
+                    md5 dd888f5d066c1fafeaaf2ae6b37e0b85 \
+                    sha1 2d1f2f789f57c9e7e8957f275b67c33176a36e0c \
+                    rmd160 8160ccb3af7cd7365ba87c77d636fb68b24c62ae \
+                    ${lapackdist} \
+                    md5 db2e9b01bd157b65440f8306c0ba5446 \
+                    sha1 398900bb2537f02578e5419c9d2e3580d705d2cc \
+                    rmd160 5ceea89d61e9738ac970875f794b7f5e7897e176 
+
+use_parallel_build  no
+build.target build
+build.dir           ${workpath}/${name}-${version}/build
+
+destroot.dir        ${build.dir}
+destroot.destdir    DESTDIR=${destroot}${prefix}
+depends_lib         port:gcc43
+
+# Set fortran compiler flags
+set myf77           ${prefix}/bin/gfortran-mp-4.3
+
+set myfflags        "-fomit-frame-pointer -O3 -fPIC -m32"
+configure.args      -C xc ${prefix}/bin/gcc-mp-4.3 \
+                    -C gc ${prefix}/bin/gcc-mp-4.3 \
+                    -C if ${myf77} \
+                    -F if  \
+                    -C ic ${prefix}/bin/gcc-mp-4.3 \
+                    -C dm ${prefix}/bin/gcc-mp-4.3 \
+                    -C sm ${prefix}/bin/gcc-mp-4.3 \
+                    -C dk ${prefix}/bin/gcc-mp-4.3 \
+                    -C sk ${prefix}/bin/gcc-mp-4.3 \
+                    -b 32 \
+                    -Fa alg -fPIC 
+
+        
+
+# we are configuring from the build directory
+configure.dir       ${workpath}/${name}-${version}/build
+configure.cmd       ../configure
+
+# change the default compilers to those of gcc43 and make into shared library
+configure.args     ${myflags} 
 
 extract {
     # extract atlas and move to a consistent working directory name
@@ -48,52 +81,38 @@ extract {
          gnutar --no-same-owner -xf -"
 }
 
-# Set fortran compiler flags
-set myf77     ${prefix}/bin/gfortran-mp-4.3
-set myfflags  "-fomit-frame-pointer -O3"
+
 
 pre-configure {
+    # first do a 'fack configure' of atlas so we get optimized lapack libraries
+    # atlas docs: 3.1.2
+    ui_msg ${configure.cmd} 
+    ui_msg ${myflags}
+    file mkdir ${workpath}/${name}-${version}/temp
+    system "cd ${workpath}/${name}-${version}/temp && \
+            ${configure.cmd} ${myflags} "
+
     # compile lapack
-    system "cd ${workpath}/${lapackname}-${lapackversion} && \
-            cp INSTALL/make.inc.gfortran make.inc"
-    reinplace "s|gfortran|${myf77}|" \
-           ${workpath}/${lapackname}-${lapackversion}/make.inc
-    reinplace "s|OPTS     = -O2|OPTS = ${myfflags}|" \
-           ${workpath}/${lapackname}-${lapackversion}/make.inc
-    reinplace "s|PLAT = _LINUX|PLAT = _darwin|" \
-           ${workpath}/${lapackname}-${lapackversion}/make.inc
-    system "cd ${workpath}/${lapackname}-${lapackversion} && make lib"
+#    system "cd ${workpath}/${lapackname}-${lapackversion} && \
+#            cp INSTALL/make.inc.gfortran make.inc"
+#    reinplace "s|gfortran|${myf77}|" \
+#           ${workpath}/${lapackname}-${lapackversion}/make.inc
+#    reinplace "s|OPTS     = -O2|OPTS = ${myfflags}|" \
+#           ${workpath}/${lapackname}-${lapackversion}/make.inc
+#    reinplace "s|PLAT = _LINUX|PLAT = _darwin|" \
+#           ${workpath}/${lapackname}-${lapackversion}/make.inc
+#    system "cd ${workpath}/${lapackname}-${lapackversion} && make lib"
 
     # create a build directory for atlas
     file mkdir ${workpath}/${name}-${version}/build
+
+    configure.args-append --with-netlib-lapack=${workpath}/${lapackname}-${lapackversion}/lapack_darwin.a 
 }
 
-# we are configuring from the build directory
-configure.dir   ${workpath}/${name}-${version}/build
-configure.cmd   ../configure
-
-# change the default compilers to those of gcc43 and make into shared library
-configure.args  --with-netlib-lapack=${workpath}/${lapackname}-${lapackversion}/lapack_darwin.a \
-                -C xc ${prefix}/bin/gcc-mp-4.3 \
-                -C gc ${prefix}/bin/gcc-mp-4.3 \
-                -C if ${myf77}\
-                -F if '${myfflags}'\
-                -C ic ${prefix}/bin/gcc-mp-4.3 \
-                -C dm ${prefix}/bin/gcc-mp-4.3 \
-                -C sm ${prefix}/bin/gcc-mp-4.3 \
-                -C dk ${prefix}/bin/gcc-mp-4.3 \
-                -C sk ${prefix}/bin/gcc-mp-4.3 \
-                -b 32
 
 post-configure {
     # recursively remove directories
     reinplace "s|rm -f|rm -rf|g" ${workpath}/${name}-${version}/build/Makefile
 }
 
-use_parallel_build  no
-build.target build
-build.dir    ${workpath}/${name}-${version}/build
 
-destroot.dir ${build.dir}
-destroot.destdir DESTDIR=${destroot}${prefix}
-depends_lib  port:gcc43
