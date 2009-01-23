@@ -48,11 +48,9 @@ depends_lib         port:gcc43
 # Set fortran compiler flags
 set myf77           ${prefix}/bin/gfortran-mp-4.3
 
-set myfflags        "-fomit-frame-pointer -O3 -fPIC -m32"
 configure.args      -C xc ${prefix}/bin/gcc-mp-4.3 \
                     -C gc ${prefix}/bin/gcc-mp-4.3 \
                     -C if ${myf77} \
-                    -F if  \
                     -C ic ${prefix}/bin/gcc-mp-4.3 \
                     -C dm ${prefix}/bin/gcc-mp-4.3 \
                     -C sm ${prefix}/bin/gcc-mp-4.3 \
@@ -68,7 +66,6 @@ configure.dir       ${workpath}/${name}-${version}/build
 configure.cmd       ../configure
 
 # change the default compilers to those of gcc43 and make into shared library
-configure.args     ${myflags} 
 
 extract {
     # extract atlas and move to a consistent working directory name
@@ -86,29 +83,32 @@ extract {
 pre-configure {
     # first do a 'fack configure' of atlas so we get optimized lapack libraries
     # atlas docs: 3.1.2
-    ui_msg ${configure.cmd} 
-    ui_msg ${myflags}
+    set atlas_path ${workpath}/${name}-${version}
     file mkdir ${workpath}/${name}-${version}/temp
-    system "cd ${workpath}/${name}-${version}/temp && \
-            ${configure.cmd} ${myflags} "
-
+    system "cd ${atlas_path}/temp && \
+            ${configure.cmd} ${configure.args}"
+    # Get the F77FLAGS 
+    set atlas_f77    [join [lrange [split [exec grep "F77 = " $atlas_path/temp/Make.inc     ] =] 1 end] =]
+    ui_debug "Found atlas F77: ${atlas_f77}"
+    set atlas_fflags [join [lrange [split [exec grep "F77FLAGS = " $atlas_path/temp/Make.inc] =] 1 end] =]
+    ui_debug "Found atlas F77FLAGS: ${atlas_fflags}"
+    system "rm -rf ${atlas_path}/temp"
     # compile lapack
-#    system "cd ${workpath}/${lapackname}-${lapackversion} && \
-#            cp INSTALL/make.inc.gfortran make.inc"
-#    reinplace "s|gfortran|${myf77}|" \
-#           ${workpath}/${lapackname}-${lapackversion}/make.inc
-#    reinplace "s|OPTS     = -O2|OPTS = ${myfflags}|" \
-#           ${workpath}/${lapackname}-${lapackversion}/make.inc
-#    reinplace "s|PLAT = _LINUX|PLAT = _darwin|" \
-#           ${workpath}/${lapackname}-${lapackversion}/make.inc
-#    system "cd ${workpath}/${lapackname}-${lapackversion} && make lib"
+    system "cd ${workpath}/${lapackname}-${lapackversion} && \
+            cp INSTALL/make.inc.gfortran make.inc"
+    reinplace "s|gfortran|${atlas_f77}|" \
+           ${workpath}/${lapackname}-${lapackversion}/make.inc
+    reinplace "s|OPTS     = -O2|OPTS = ${atlas_fflags}|" \
+           ${workpath}/${lapackname}-${lapackversion}/make.inc
+    reinplace "s|PLAT = _LINUX|PLAT = _darwin|" \
+           ${workpath}/${lapackname}-${lapackversion}/make.inc
+    system "cd ${workpath}/${lapackname}-${lapackversion} && make lib"
 
     # create a build directory for atlas
     file mkdir ${workpath}/${name}-${version}/build
 
     configure.args-append --with-netlib-lapack=${workpath}/${lapackname}-${lapackversion}/lapack_darwin.a 
 }
-
 
 post-configure {
     # recursively remove directories
