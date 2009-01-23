@@ -7,10 +7,10 @@ name               atlas
 version            3.8.2
 
 # additional versions
-set lapackversion  3.1.1
+set lapackversion  3.2
 set lapackname     lapack
 set atlasdist      ${name}${version}.tar.bz2
-set lapackdist     ${lapackname}-${lapackversion}.tgz
+set lapackdist     ${lapackname}.tgz
 
 maintainers        cornell.edu:ajb78
 platforms          darwin
@@ -22,7 +22,7 @@ long_description   The current version provides a complete BLAS and LAPACK API.\
 
 homepage           http://math-atlas.sourceforge.net/
 
-master_sites       sourceforge:math-atlas/${name}${version}.tar.bz2:atlas\
+master_sites       sourceforge:math-atlas/${name}${version}.tar.bz2:atlas \
                    http://www.netlib.org/lapack:lapack
 
 distfiles          ${atlasdist}:atlas \
@@ -33,9 +33,9 @@ checksums          ${atlasdist} \
                    sha1 2d1f2f789f57c9e7e8957f275b67c33176a36e0c \
                    rmd160 8160ccb3af7cd7365ba87c77d636fb68b24c62ae \
                    ${lapackdist} \
-                   md5 00b21551a899bcfbaa7b8443e1faeef9 \
-                   sha1 be1a3d53d761935703a7be88c3dd1164daa79554 \
-                   rmd160 ba864e7a2b759ba1337ea9a452e12a7ab5494cdc
+                   md5 db2e9b01bd157b65440f8306c0ba5446 \
+                   sha1 398900bb2537f02578e5419c9d2e3580d705d2cc \
+                   rmd160 5ceea89d61e9738ac970875f794b7f5e7897e176 
 
 extract {
     # extract atlas and move to a consistent working directory name
@@ -82,7 +82,8 @@ configure.args  --with-netlib-lapack=${workpath}/${lapackname}-${lapackversion}/
                 -C dm ${prefix}/bin/gcc-mp-4.3 \
                 -C sm ${prefix}/bin/gcc-mp-4.3 \
                 -C dk ${prefix}/bin/gcc-mp-4.3 \
-                -C sk ${prefix}/bin/gcc-mp-4.3
+                -C sk ${prefix}/bin/gcc-mp-4.3 \
+                -b 32
 
 post-configure {
     # recursively remove directories
