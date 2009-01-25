@@ -26,15 +26,12 @@ configure.args    --disable-svm-light \
                   --includes=${prefix}/include \
                   --cxx=${prefix}/bin/g++-mp-4.3 \
                   --cc=${prefix}/bin/gcc-mp-4.3 \
-                  #--disable-lapack \
                   --install-path=${prefix} \
                   --enable-readline \
                   --destdir=${destroot}
 
 worksrcdir        shogun-${version}/src
-patchfiles        patch-src.diff
 
-# atlas/lapack disabled due to bug #17698
 # default_variants  +atlas +glpk +lp_solve
 default_variants  +glpk +lp_solve +atlas
 
@@ -44,7 +41,8 @@ depends_lib       port:python25 \
                   port:readline
 
 patch {
-  system "cd ${workpath}/shogun-${version} && patch -p0 < ${filespath}/${patchfiles}"
+  system "cd ${workpath}/shogun-${version} && patch -p0 < ${filespath}/patch-src"
+  system "cd ${workpath}/shogun-${version} && patch -p0 < ${filespath}/patch-src-lib-lapack.cpp"
 }
 variant cplex description {enable Multiple Kernel Learning CPLEX(tm)} {
   configure.args-append --enable-cplex

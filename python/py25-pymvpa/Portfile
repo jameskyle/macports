@@ -29,7 +29,7 @@ build.env               CFLAGS='-I${prefix}/include -L${prefix}/lib'
 patch.pre_args          -p1
 patchfiles              patch-mvpa.diff
 
-default_variants        +pywavelets +libsvm +hcluster +pynifti
+default_variants        +pywavelets +libsvm +hcluster +pynifti +shogun
 
 variant scipy description {Add support for scipy libraries} {
     depends_lib-append port:py25-scipy
@@ -57,6 +57,10 @@ variant matplotlib description {include support for the matplotlib library} {
 
 variant pywavelet description {include support for pywavelet module} {
     depends_lib-append port:py25-PyWavelets
+}
+
+variant shogun description {compile support for the py25-shogun classifiers} {
+    depends_lib-append port:py25-shogun
 }
 build {
     system "cd ${worksrcpath} && ${build.env} python2.5 setup.py build_ext ${configure.args}"

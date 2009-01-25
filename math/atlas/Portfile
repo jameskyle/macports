@@ -36,7 +36,10 @@ checksums           ${atlasdist} \
                     md5 db2e9b01bd157b65440f8306c0ba5446 \
                     sha1 398900bb2537f02578e5419c9d2e3580d705d2cc \
                     rmd160 5ceea89d61e9738ac970875f794b7f5e7897e176 
-
+# The following patch corrects an error in which Core 2 duos and Xeons
+# are mistakenly identified as PIII cpu's
+patchfiles          patch-CONFIG-src-backend-archinf_x86.c.diff
+set make_patch      patch-build-Make.top.diff
 use_parallel_build  no
 build.target build
 build.dir           ${workpath}/${name}-${version}/build
@@ -81,27 +84,46 @@ extract {
 
 
 pre-configure {
+    # Get some system specific variables for maximum optimization
+    set cpufreq [expr {[exec sysctl -n hw.cpufrequency]/1000000}]
+    ui_debug "Setting CPU Frequency for: ${cpufreq}"
+    configure.args-append -D c -DPentiumCPS=${cpufreq}
+
     # first do a 'fack configure' of atlas so we get optimized lapack libraries
     # atlas docs: 3.1.2
     set atlas_path ${workpath}/${name}-${version}
     file mkdir ${workpath}/${name}-${version}/temp
     system "cd ${atlas_path}/temp && \
             ${configure.cmd} ${configure.args}"
+    
     # Get the F77FLAGS 
     set atlas_f77    [join [lrange [split [exec grep "F77 = " $atlas_path/temp/Make.inc     ] =] 1 end] =]
     ui_debug "Found atlas F77: ${atlas_f77}"
+    
     set atlas_fflags [join [lrange [split [exec grep "F77FLAGS = " $atlas_path/temp/Make.inc] =] 1 end] =]
     ui_debug "Found atlas F77FLAGS: ${atlas_fflags}"
+    # Remove the old test configure directory
     system "rm -rf ${atlas_path}/temp"
+    
     # compile lapack
     system "cd ${workpath}/${lapackname}-${lapackversion} && \
             cp INSTALL/make.inc.gfortran make.inc"
+    
     reinplace "s|gfortran|${atlas_f77}|" \
            ${workpath}/${lapackname}-${lapackversion}/make.inc
+    
     reinplace "s|OPTS     = -O2|OPTS = ${atlas_fflags}|" \
            ${workpath}/${lapackname}-${lapackversion}/make.inc
+    
+    reinplace "s|NOOPT    = -O0|NOOPT = -O2 -m32|" \
+           ${workpath}/${lapackname}-${lapackversion}/make.inc
+
     reinplace "s|PLAT = _LINUX|PLAT = _darwin|" \
            ${workpath}/${lapackname}-${lapackversion}/make.inc
+    
+    reinplace "s|LOADOPTS =|LOADOPTS = ${atlas_fflags}|" \
+           ${workpath}/${lapackname}-${lapackversion}/make.inc
+    
     system "cd ${workpath}/${lapackname}-${lapackversion} && make lib"
 
     # create a build directory for atlas
@@ -113,6 +135,49 @@ pre-configure {
 post-configure {
     # recursively remove directories
     reinplace "s|rm -f|rm -rf|g" ${workpath}/${name}-${version}/build/Makefile
+
+    # patch ${name}-${version}/build/Make.top to install dynamic libs
+    system "cd ${worksrcpath}/build/ && \
+            patch -p0 < ${filespath}/${make_patch}"
 }
 
+pre-destroot {
+  # We have to manually create the dylib shared libs as the default build does not do this
+  set ld "ld -dynamic -arch i386 -dylib -single_module -dead_strip -x \
+          -all_load -L. -L${prefix}/lib/gcc43 -ldylib1.o -dylib_install_name"
+  
+  system "cd ${workpath}/${name}-${version}/build/lib && \
+          ${ld} libatlas.dylib libatlas.a -o libatlas.dylib -lSystem"
+  
+  system "cd ${workpath}/${name}-${version}/build/lib && \
+          ${ld} libptcblas.dylib libptcblas.a -o libptcblas.dylib -latlas -lSystem"
+  
+  system "cd ${workpath}/${name}-${version}/build/lib && \
+          ${ld} libptf77blas.dylib libptf77blas.a -o libptf77blas.dylib -lgfortran \
+          -latlas -lSystem"
 
+  system "cd ${workpath}/${name}-${version}/build/lib && \
+          ${ld} liblapack.dylib liblapack.a -o liblapack.dylib -lptf77blas \
+          -lgfortran -lptcblas -latlas -lgcc_s.1 -lSystem"
+
+}
+
+#destroot {
+#  xinstall -m 755 -d ${destroot}${prefix}/bin
+#  xinstall -m 755 -d ${destroot}${prefix}/lib
+#  xinstall -m 755 -d ${destroot}${prefix}/include
+#
+#  xinstall -m 644 -d ${worksrcpath}/build/lib/libatlas.dylib     ${destroot}${prefix}/lib
+#  xinstall -m 644 -d ${worksrcpath}/build/lib/liblapack.dylib    ${destroot}${prefix}/lib
+#  xinstall -m 644 -d ${worksrcpath}/build/lib/libptcblas.dylib   ${destroot}${prefix}/lib
+#  xinstall -m 644 -d ${worksrcpath}/build/lib/libptf77blas.dylib ${destroot}${prefix}/lib
+#
+#
+#}
+#
+post-destroot {
+  # we make soft links to the parallel built libs
+  system "cd ${destroot}${prefix}/lib && \
+          ln -sf ./libptcblas.dylib libcblas.dylib && \
+          ln -sf ./libptf77blas.dylib libf77blas.dylib"
+}
