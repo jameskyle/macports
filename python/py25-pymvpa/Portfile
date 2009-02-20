@@ -5,8 +5,7 @@ PortSystem              1.0
 PortGroup               python25 1.0
 
 name                    py25-pymvpa
-version                 current
-#version                 0.4
+version                 0.4.1
 categories              python
 
 platforms               darwin
@@ -18,10 +17,11 @@ long_description        ${description}. In the neuroimaging contexts such analys
 homepage                http://www.pymvpa.org
 fetch.type              git
 git.url                 git://git.debian.org/git/pkg-exppsy/pymvpa.git
-#git.branch              origin/maint/0.4
+git.branch              origin/maint/0.4.1
 
 depends_lib             port:py25-numpy \
-                        port:git-core
+                        port:git-core \
+                        port:py25-setuptools
 configure.args                                  
 
 build.env               CFLAGS='-I${prefix}/include -L${prefix}/lib'
@@ -29,7 +29,7 @@ build.env               CFLAGS='-I${prefix}/include -L${prefix}/lib'
 patch.pre_args          -p1
 patchfiles              patch-mvpa.diff
 
-default_variants        +pywavelets +libsvm +hcluster +pynifti +shogun
+default_variants        +pywavelet +libsvm +hcluster +pynifti +shogun +scipy
 
 variant scipy description {Add support for scipy libraries} {
     depends_lib-append port:py25-scipy
@@ -56,7 +56,7 @@ variant matplotlib description {include support for the matplotlib library} {
 }
 
 variant pywavelet description {include support for pywavelet module} {
-    depends_lib-append port:py25-PyWavelets
+    depends_lib-append port:py25-pywavelets
 }
 
 variant shogun description {compile support for the py25-shogun classifiers} {

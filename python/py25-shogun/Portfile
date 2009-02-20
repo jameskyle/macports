@@ -38,7 +38,9 @@ default_variants  +glpk +lp_solve +atlas
 depends_lib       port:python25 \
                   port:py25-numpy \
                   port:gcc43 \
-                  port:readline
+                  port:readline \
+                  port:py25-setuptools
+
 
 patch {
   system "cd ${workpath}/shogun-${version} && patch -p0 < ${filespath}/patch-src"
